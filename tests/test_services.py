@@ -103,7 +103,6 @@ from src.services import analyze_cashback
         ),
     ),
 )
-# ауа
 def test_analyze_cashback(transactions, year, month, expected_output):
     result = analyze_cashback(transactions, year, month)
     assert result == expected_output
