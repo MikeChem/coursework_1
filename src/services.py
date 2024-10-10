@@ -58,6 +58,6 @@ def analyze_cashback(operations: List[Dict], year: int, month: int) -> str:
         logger.error(f"Возникла ошибка {e}")
         return ""
 
-
+# ауа
 # if __name__ == "__main__":
 #     print(analyze_cashback(operations, year, month))

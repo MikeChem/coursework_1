@@ -78,3 +78,4 @@ def spending_by_category(operations: pd.DataFrame, category: str, date: Optional
         logger.error(f"Произошла ошибка: {e}")
         print(f"Произошла ошибка: {e}")
         return ""
+    # ауа

@@ -55,6 +55,6 @@ def main():
         print("Информация о тратах по категории")
         print(spending_by_category(df, "Супермаркеты", "20.05.2020"))
 
-
+# ауа
 if __name__ == "__main__":
     main()

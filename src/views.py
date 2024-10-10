@@ -63,6 +63,6 @@ def main_page(input_date: Any, user_settings: Any, api_key_currency: Any, api_ke
     return json.dumps(user_data, ensure_ascii=False, indent=4)
 
 
-#
+## ауа
 # if __name__ == "__main__":
 #     print(main_page(input_date_str, user_choice, api_key_currency, api_key_stocks))

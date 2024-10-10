@@ -21,7 +21,7 @@ def sample_data():
     df = pd.DataFrame(data)
     return df
 
-
+# ауа
 def test_spending_by_category(sample_data):
     result = spending_by_category(sample_data, "Продукты")
     assert len(result) == 4

@@ -15,7 +15,7 @@ from src.utils import (
     load_operations_xlsx,
 )
 
-
+# ауа
 def test_load_operations_xlsx():
     test_data = [
         {
