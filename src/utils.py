@@ -200,5 +200,4 @@ def get_stocks_cost(companies: List[str], api_key_stocks: Any) -> List[Dict]:
     logger.info("Стоимость акций создана")
     return stocks_cost
 
-
 # print(get_stocks_cost(user_stocks, api_key_stocks))

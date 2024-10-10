@@ -1,43 +1,49 @@
-import functools
+import logging
+import os
 from datetime import datetime, timedelta
+from functools import wraps
+from typing import Any, Callable, Optional
 from pathlib import Path
-from typing import Any, Callable
-
 import pandas as pd
-
-from src.logger import setup_logger
 from src.utils import load_operations_xlsx
 
-logger = setup_logger("reports", "../logs/reports.log")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+rel_file_path = os.path.join(current_dir, "../logs/reports.log")
+abs_file_path = os.path.abspath(rel_file_path)
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 operations_path = BASE_DIR / "data" / "operations.xlsx"
 operations = load_operations_xlsx(operations_path)
 
-
-def report_to_file_default(func: Callable) -> Callable:
-    """Записывает в файл результат, который возвращает функция, формирующая отчет."""
-
-    @functools.wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
-        result = func(*args, **kwargs)
-        with open("function_operation_report.txt", "w") as file:
-            file.write(str(result))
-        logger.info(f"Записан результат работы функции {func}")
-        return result
-
-    return wrapper
+logger = logging.getLogger("reports")
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler(abs_file_path, mode="w", encoding="utf-8")
+file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(funcName)s - %(levelname)s: %(message)s")
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
 
 
 def report_to_file(filename: str = "function_operation_report.txt") -> Callable:
-    """Записывает в переданный файл результат, который возвращает функция, формирующая отчет."""
+    """Декоратор для функций-отчетов, который записывает в файл результат,
+    который возвращает функция, формирующая отчет.
+    Декоратор — принимает имя файла в качестве параметра."""
 
-    def decorator(func: Callable[[tuple[Any, ...], dict[str, Any]], Any]) -> Callable:
-        @functools.wraps(func)
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            result = func(*args, **kwargs)
-            with open(filename, "w") as file:
-                file.write(str(result))
-            logger.info(f"Записан результат работы функции {func} в файл {filename}")
+            try:
+                result = func(*args, **kwargs)
+                with open(filename, "w", encoding="utf-8") as file:
+                    logger.info(f"Запись результата работы функции {func} в файл {filename}")
+                    file.write(result)
+            except Exception as e:
+                logger.error(f"Произошла ошибка: {e}")
+                with open(filename, "w", encoding="utf-8") as file:
+                    file.write(f"{func.__name__} error: {e} Inputs: {args}, {kwargs}\n")
+
+                raise
+
             return result
 
         return wrapper
@@ -45,31 +51,30 @@ def report_to_file(filename: str = "function_operation_report.txt") -> Callable:
     return decorator
 
 
-# дата гггг.мм.дд
-@report_to_file_default
-def spending_by_category(operations: pd.DataFrame, category: str, date: Any = None) -> Any:
-    """Функция возвращает траты по заданной категории за последние три месяца
-    (от переданной даты, если дата не передана берет текущую)"""
+@report_to_file()
+def spending_by_category(operations: pd.DataFrame, category: str, date: Optional[Any] = None) -> str | None:
+    """Функция принимает на вход: датафрейм с транзакциями,
+                                  название категории,
+                                  опциональную дату.
+        Если дата не передана, то берется текущая дата.
+    Функция возвращает траты по заданной категории за последние три месяца (от переданной даты)."""
     try:
         operations["Дата операции"] = pd.to_datetime(operations["Дата операции"], format="%d.%m.%Y %H:%M:%S")
         if date is None:
             date = datetime.now()
         else:
-            date = datetime.strptime(date, "%Y.%m.%d")
+            date = datetime.strptime(date, "%d.%m.%Y")
         start_date = date - timedelta(days=date.day - 1) - timedelta(days=3 * 30)
-        filtered_operations = operations[
+        logger.info(f"Фильтрация транзакций по категории {category} за последние 3 месяца")
+        filtered_transaction = operations[
             (operations["Дата операции"] >= start_date)
             & (operations["Дата операции"] <= date)
             & (operations["Категория"] == category)
         ]
-        grouped_operations = filtered_operations.groupby(pd.Grouper(key="Дата операции", freq="ME")).sum()
-        logger.info(f"Траты за последние три месяца от {date} по категории {category}")
-        return grouped_operations.to_dict(orient="records")
+        grouped_transaction = filtered_transaction.groupby("Дата операции").sum()
+        logger.info("Транзакции отфильтрованы и сгруппированы")
+        return grouped_transaction.to_json(orient="records", force_ascii=False, indent=4)
     except Exception as e:
-        print(f"Возникла ошибка {e}")
-        logger.error(f"Возникла ошибка {e}")
+        logger.error(f"Произошла ошибка: {e}")
+        print(f"Произошла ошибка: {e}")
         return ""
-
-
-if __name__ == "__main__":
-    print(spending_by_category(operations, "Книги"))

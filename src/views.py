@@ -5,8 +5,15 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-from src.utils import (filter_operations_by_date, get_cards_data, get_exchange_rates, get_stocks_cost,
-                       get_top_5_operations, greeting, load_operations_xlsx)
+from src.utils import (
+    filter_operations_by_date,
+    get_cards_data,
+    get_exchange_rates,
+    get_stocks_cost,
+    get_top_5_operations,
+    greeting,
+    load_operations_xlsx,
+)
 
 with open("../user_settings.json", "r") as file:
     user_choice = json.load(file)
@@ -56,6 +63,5 @@ def main_page(input_date: Any, user_settings: Any, api_key_currency: Any, api_ke
     return json.dumps(user_data, ensure_ascii=False, indent=4)
 
 
-#
 # if __name__ == "__main__":
 #     print(main_page(input_date_str, user_choice, api_key_currency, api_key_stocks))
