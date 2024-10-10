@@ -1,7 +1,6 @@
 import pandas as pd
 import pytest
 
-from src.logger import setup_logger
 from src.reports import spending_by_category
 
 
@@ -25,4 +24,4 @@ def sample_data():
 
 def test_spending_by_category(sample_data):
     result = spending_by_category(sample_data, "Продукты")
-    assert len(result) == 0  # Ожидаем три строки, соответствующие категории "Продукты"
+    assert len(result) == 4

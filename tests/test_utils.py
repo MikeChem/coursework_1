@@ -1,20 +1,19 @@
 from datetime import datetime
-from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
 import requests_mock
 
-from src.logger import setup_logger
-from src.utils import (filter_operations_by_date, get_cards_data, get_exchange_rates, get_stocks_cost,
-                       get_top_5_operations, greeting, load_operations_xlsx)
-
-# from src.utils import (filter_transactions_by_date, get_cards_data, read_excel_to_dict_lict, get_exchange_rates,
-#                        get_stocks_cost, get_top_5_transactions, greeting)
-
-
-# ROOT_PATH = Path(__file__).resolve().parent
+from src.utils import (
+    filter_operations_by_date,
+    get_cards_data,
+    get_exchange_rates,
+    get_stocks_cost,
+    get_top_5_operations,
+    greeting,
+    load_operations_xlsx,
+)
 
 
 def test_load_operations_xlsx():

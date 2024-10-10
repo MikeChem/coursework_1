@@ -53,7 +53,7 @@ def main():
 
     else:
         print("Информация о тратах по категории")
-        print(spending_by_category(df, "Супермаркеты", "2020.05.20"))
+        print(spending_by_category(df, "Супермаркеты", "20.05.2020"))
 
 
 if __name__ == "__main__":
